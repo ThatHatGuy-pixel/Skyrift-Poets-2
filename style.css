@@ -773,7 +773,7 @@ body {
   z-index: -1;
 
   /* 🔧 REPLACE IMAGE HERE */
-  background-image: url("../images/crumpled-paper.png");
+  background-image: url("Paper.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
