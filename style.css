@@ -772,26 +772,5 @@ body {
   inset: 0;
   z-index: -1;
 
-  /* 🔧 REPLACE IMAGE HERE */
-  background-image: url("Paper.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  /* 🔧 paper “strength” */
-  opacity: 0.18;
-
-  /* 🔧 makes it feel like a card */
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.55);
-}
-
-/* make the text readable on top of the paper */
-.blog-post .section {
-  padding: 2rem 1.6rem; /* 🔧 padding */
-  background: rgba(2, 6, 23, 0.55); /* 🔧 dark tint over paper */
-  border-radius: 18px;
-  backdrop-filter: blur(6px);
 }
 
