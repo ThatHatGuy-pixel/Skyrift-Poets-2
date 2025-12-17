@@ -754,23 +754,5 @@ body {
   }
 }
 
-/* ===========================
-   BLOG POST "PAPER" BACKDROP
-   =========================== */
 
-.blog-post .section {
-  position: relative;
-  z-index: 0;
-  max-width: 900px;   /* 🔧 change width */
-  margin: 0 auto;
-}
-
-/* the paper image layer */
-.blog-post .section::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-
-}
 
