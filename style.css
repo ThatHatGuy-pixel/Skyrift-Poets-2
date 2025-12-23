@@ -766,5 +766,10 @@ body {
   }
 }
 
+.site-header,
+.site-header * {
+  position: relative;
+  z-index: 9999;
+}
 
 
