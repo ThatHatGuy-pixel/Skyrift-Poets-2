@@ -32,11 +32,24 @@
   box-sizing: border-box;
 }
 
+
 html,
 body {
   margin: 0;
   padding: 0;
 }
+
+/* ✅ PASTE THIS RIGHT HERE */
+html {
+  scroll-behavior: smooth;   /* optional */
+  scroll-padding-top: 90px;  /* match your header height */
+}
+
+section[id] {
+  scroll-margin-top: 90px;
+}
+/* ✅ END PASTE */
+
 
 body {
   min-height: 100vh;
@@ -766,10 +779,4 @@ body {
   }
 }
 
-.site-header,
-.site-header * {
-  position: relative;
-  z-index: 9999;
-}
-
-
+.site-header { z-index: 9999; }
