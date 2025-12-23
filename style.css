@@ -49,6 +49,18 @@ body {
 /* ===========================
    NAVBAR
    =========================== */
+/* Prevent browser default blue/purple visited link colors in header/nav */
+.site-header a:link,
+.site-header a:visited {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-header a:hover,
+.site-header a:focus {
+  color: var(--text);
+}
+
 
 .site-header {
   position: fixed;
