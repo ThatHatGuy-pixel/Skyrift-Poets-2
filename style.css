@@ -76,11 +76,12 @@ body {
 
 
 .site-header {
-  position: fixed;
+  position: fixed !important;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  width: 100%;
+  z-index: 9999;
   background: linear-gradient(
     to bottom,
     rgba(3, 7, 18, 0.97),
@@ -89,6 +90,7 @@ body {
   border-bottom: 1px solid rgba(148, 163, 184, 0.28);
   backdrop-filter: blur(18px);
 }
+
 
 .nav-inner {
   max-width: var(--max-width);
