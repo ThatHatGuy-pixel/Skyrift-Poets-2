@@ -1,303 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>My Game – Official Site & Devlog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- IMPORTANT: this must point to the file style.css (not a folder) -->
-    <link rel="stylesheet" href="style.css" />
-
-    <!-- Optional Google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<title>Skyrift Poets – Official Site & Devlog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <!-- TOP NAVIGATION -->
-    <header class="site-header">
-        <div class="nav-inner">
-            <div class="logo">
-                <span class="logo-text">Skyrift Poets</span>
-            </div>
 
-            <nav class="main-nav">
-                <a href="#home" class="nav-link active">Home</a>
-                <a href="#blog" class="nav-link">Blog</a>
-                <a href="#media" class="nav-link">Media</a>
-                <a href="#wiki" class="nav-link">Wiki</a>
-                <a href="#faq" class="nav-link">FAQ</a>
-                <a href="#buy" class="nav-link cta-link">Buy / Wishlist</a>
-            </nav>
-        </div>
-    </header>
+<!-- ========================================================= -->
+<!-- TOP NAVIGATION + SEARCH BAR -->
+<!-- ========================================================= -->
 
-    <!-- HERO SECTION -->
-    <main>
-        <section class="hero" id="home">
-            <div class="hero-overlay"></div>
+<header class="site-header">
+  <div class="nav-inner">
 
-            <div class="hero-content">
-                <h1 class="hero-title">Skyrift Poets</h1>
-                <p class="hero-tagline">
-                    
-                  An extensive tour of creative endovers and the development of a reimagined video game; the elaborate world of Skylanders.
-
-                </p>
-
-                <div class="hero-buttons">
-                    <a href="#buy" class="btn primary">Wishlist / Download</a>
-                    <a href="#blog" class="btn secondary">Read Dev Blog</a>
-                </div>
-            </div>
-
-            <!-- Bottom strip (your pixel scene / environment art) -->
-            <div class="hero-scene">
-                <!-- If you have a real image, replace the span with:
-                     <img src="images/your-scene.png" alt="Game scene">
-                -->
-                <span class="hero-scene-placeholder">
-                    [PLACE YOUR LONG PIXEL / RENDERED SCENE IMAGE HERE]
-                </span>
-            </div>
-        </section>
-
-       <!-- LATEST NEWS / DEVLOG PREVIEW -->
-<section class="section" id="blog">
-    <div class="section-header">
-        <h2>Latest News & Devlog</h2>
-        <p>Short updates about your game, art, and development progress.</p>
+    <div class="logo">
+      <span class="logo-text">Skyrift Poets</span>
     </div>
 
-    <div class="cards-grid">
+    <nav class="main-nav">
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="blog.html" class="nav-link">Blog</a>
+      <a href="#media" class="nav-link">Media</a>
+      <a href="#wiki" class="nav-link">Wiki</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#buy" class="nav-link cta-link">Buy / Wishlist</a>
+    </nav>
 
-        <!-- POST 1 -->
-        <article class="card post-card">
-            <div class="card-meta">
-                <span class="post-date">24 Jul 2025</span>
-                <span class="post-tag">Dev Update</span>
-            </div>
-            <h3 class="card-title">What happened to Skylanders?</h3>
-            <p class="card-body">
-                The life and death of a seemingly invincible game franchise.
-            </p>
-            <a href="posts/devlog-01.html" class="card-link">Read full post →</a>
-        </article>
-
-        <!-- POST 2 -->
-        <article class="card post-card">
-            <div class="card-meta">
-                <span class="post-date">20 Oct 2025</span>
-                <span class="post-tag">Art</span>
-            </div>
-            <h3 class="card-title">Main cast Concept Art</h3>
-            <p class="card-body">
-                Early style moddeling and lore
-            </p>
-            <a href="posts/devlog-02.html" class="card-link">View artwork →</a>
-        </article>
-
-        <!-- POST 3 -->
-        <article class="card post-card">
-            <div class="card-meta">
-                <span class="post-date">10 DEC 2025</span>
-                <span class="post-tag">Roadmap</span>
-            </div>
-            <h3 class="card-title">Roadmap & Release Plans</h3>
-            <p class="card-body">
-                An overview of demo plans, alpha launch, and future content packs.
-            </p>
-            <a href="post-template.html" class="card-link">See roadmap →</a>
-        </article>
-
+    <!-- SEARCH BAR BUTTON -->
+    <div class="search-trigger" id="openSearch">
+      🔍 Search
     </div>
 
-    <div class="section-footer">
-        <a href="blog.html" class="text-link">View all blog posts</a>
+  </div>
+</header>
+
+
+<!-- ========================================================= -->
+<!-- SEARCH PANEL OVERLAY -->
+<!-- ========================================================= -->
+
+<div class="search-overlay" id="searchOverlay">
+
+  <div class="search-panel">
+
+    <div class="search-top">
+      <input id="searchInput" type="text" placeholder="Search art & blog posts…">
+      <!-- Template icon — you may replace -->
+      <button id="closeSearch" class="search-close-btn">✕</button>
     </div>
+
+    <div class="search-results" id="searchResults">
+      <!-- Results auto-fill via JS -->
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- HERO + CONTENT (unchanged) -->
+<!-- ========================================================= -->
+<!-- your existing homepage content stays the same down to MEDIA -->
+
+
+<!-- ========================================================= -->
+<!-- MEDIA SECTION (gallery thumbnails now open viewer) -->
+<!-- ========================================================= -->
+
+<section class="section" id="media">
+  <div class="section-header">
+    <h2>Media & Gallery</h2>
+    <p>Add screenshots, GIFs, and art from your game.</p>
+  </div>
+
+  <div class="media-grid">
+
+    <!-- TEMPLATE ART ITEM -->
+    <div class="media-item"
+         data-title="Space Cats"
+         data-desc="Template description text goes here — replace with your own."
+         data-src="images/Space cats.jpg">
+
+      <img src="images/Space cats.jpg" alt="Space Cats">
+      <div class="media-label">Space Cats</div>
+    </div>
+
+    <!-- Add more items the same way -->
+  </div>
+
+  <div class="section-footer">
+    <a href="gallery.html" class="text-link">Open full gallery</a>
+  </div>
 </section>
 
-        <!-- ABOUT THE GAME -->
-        <section class="section alt">
-            <div class="section-split">
-                <div class="section-text">
-                    <h2>About the Game</h2>
-                    <p>
-                        Use this area to give a clear overview of your game. What genre is it?
-                        What makes it special? Is it single-player, co-op, PvP, or a mix?
-                    </p>
-                    <ul class="feature-list">
-                        <li>🪐 Feature 1 – e.g. explore procedurally-generated planets.</li>
-                        <li>⚔️ Feature 2 – fast-paced combat with collectible characters.</li>
-                        <li>🎨 Feature 3 – unique art style with hand-drawn or pixel assets.</li>
-                        <li>🎵 Feature 4 – original soundtrack, describe its vibe.</li>
-                    </ul>
-                </div>
 
-                <div class="section-media-box">
-                    <!-- Replace placeholder with main screenshot -->
-                    <!-- <img src="images/game-overview.png" alt="Game screenshot"> -->
-                    <span class="media-placeholder">
-                        [DROP MAIN GAME SCREENSHOT / KEY ART HERE]
-                    </span>
-                </div>
+
+<!-- ========================================================= -->
+<!-- ART VIEWER PAGE (opens when art clicked) -->
+<!-- ========================================================= -->
+
+<div class="art-viewer" id="artViewer">
+
+  <div class="art-left">
+
+    <h2 id="artTitle"></h2>
+
+    <div class="art-image-wrapper">
+
+      <!-- Main image -->
+      <img id="artMainImage">
+
+      <!-- Maximise icon template (you may replace image) -->
+      <button id="enterFullscreen" class="fullscreen-btn">
+        ☐
+      </button>
+
+      <!-- Minimise icon template -->
+      <button id="exitFullscreen" class="minimise-btn">
+        🞑
+      </button>
+
+    </div>
+
+    <p id="artDescription" class="art-description"></p>
+
+  </div>
+
+  <!-- RIGHT SIDE SCROLL LIST -->
+  <aside class="art-sidebar" id="artSidebar">
+    <!-- auto-filled thumbnails -->
+  </aside>
+
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- FULLSCREEN MODE CONTAINER -->
+<!-- ========================================================= -->
+
+<div class="fullscreen-container" id="fullscreenContainer">
+  <img id="fullscreenImage">
+  <button id="fullscreenExitBtn" class="fullscreen-exit-btn">🞑</button>
+</div>
+
+
+
+<!-- ========================================================= -->
+<!-- SEARCH + ART VIEWER SCRIPT -->
+<!-- ========================================================= -->
+
+<script>
+/* =======================
+   ART VIEWER LOGIC
+======================= */
+
+const viewer = document.getElementById("artViewer");
+const mainImg = document.getElementById("artMainImage");
+const titleEl = document.getElementById("artTitle");
+const descEl = document.getElementById("artDescription");
+const sidebar = document.getElementById("artSidebar");
+
+const fullscreenWrap = document.getElementById("fullscreenContainer");
+const fullscreenImg = document.getElementById("fullscreenImage");
+const fsExit = document.getElementById("fullscreenExitBtn");
+
+document.querySelectorAll(".media-item").forEach(item => {
+  item.addEventListener("click", () => {
+
+    const src = item.dataset.src;
+    const title = item.dataset.title;
+    const desc = item.dataset.desc;
+
+    mainImg.src = src;
+    fullscreenImg.src = src;
+    titleEl.textContent = title;
+    descEl.textContent = desc;
+
+    viewer.style.display = "grid";
+  });
+});
+
+document.getElementById("enterFullscreen").onclick = () => {
+  fullscreenWrap.style.display = "flex";
+};
+
+document.getElementById("exitFullscreen").onclick =
+fsExit.onclick = () => {
+  fullscreenWrap.style.display = "none";
+};
+
+
+
+/* =======================
+   SEARCH SYSTEM
+======================= */
+
+const searchOverlay = document.getElementById("searchOverlay");
+const openSearch = document.getElementById("openSearch");
+const closeSearch = document.getElementById("closeSearch");
+const searchInput = document.getElementById("searchInput");
+const resultsBox = document.getElementById("searchResults");
+
+openSearch.onclick = () => searchOverlay.classList.add("show");
+closeSearch.onclick = () => searchOverlay.classList.remove("show");
+searchOverlay.addEventListener("click", e => {
+  if (e.target === searchOverlay) searchOverlay.classList.remove("show");
+});
+
+const searchableItems = [];
+
+/* ART becomes searchable */
+document.querySelectorAll(".media-item").forEach(item => {
+  searchableItems.push({
+    type: "art",
+    title: item.dataset.title,
+    desc: item.dataset.desc,
+    src: item.dataset.src
+  });
+});
+
+/* BLOG placeholder structure (replace with real posts if needed) */
+searchableItems.push({
+  type: "blog",
+  title: "What happened to Skylanders?",
+  text: "The life and death of a seemingly invincible game franchise."
+});
+
+function highlight(text, term){
+  const re = new RegExp(`(${term})`, "ig");
+  return text.replace(re, "<mark>$1</mark>");
+}
+
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.trim();
+
+  resultsBox.innerHTML = "";
+
+  searchableItems.forEach(item => {
+
+    const content = (item.desc || item.text || "").toLowerCase();
+
+    if (!q || item.title.toLowerCase().includes(q) || content.includes(q)) {
+
+      const el = document.createElement("div");
+      el.className = "search-result";
+
+      if (item.type === "art") {
+        el.innerHTML = `
+          <div class="search-art">
+            <img src="${item.src}">
+            <div>
+              <h3>${highlight(item.title,q)}</h3>
+              <p>${highlight(item.desc,q)}</p>
             </div>
-        </section>
+          </div>`;
+      }
 
-        <!-- MEDIA SECTION -->
-        <section class="section" id="media">
-            <div class="section-header">
-                <h2>Media &amp; Gallery</h2>
-                <p>Add screenshots, GIFs, and art from your game.</p>
-            </div>
+      if (item.type === "blog") {
+        el.innerHTML = `
+          <div class="search-blog">
+            <h3>${highlight(item.title,q)}</h3>
+            <p>${highlight(item.text,q)}</p>
+          </div>`;
+      }
 
-            <!-- Trailer / main video -->
-            <div class="media-highlight">
-                <!-- Example if you have a YouTube video:
-                <iframe src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>
-                -->
-                <div class="video-placeholder">
-                    [YOUTUBE / TRAILER EMBED HERE]
-                </div>
-            </div>
+      resultsBox.appendChild(el);
+    }
+  });
 
-            <!-- Image grid -->
-            <div class="media-grid">
-                <div class="media-item">
-                    <!-- <img src="images/gallery-1.png" alt="Screenshot 1"> -->
-                    <span class=""images/Space cats.jpg">Space Cats</span>
-                </div>
-                <div class="media-item">
-                    <!-- <img src="images/gallery-2.png" alt="Screenshot 2"> -->
-                    <span class="media-placeholder">Screenshot 2</span>
-                </div>
-                <div class="media-item">
-                    <!-- <img src="images/gallery-3.png" alt="Artwork 1"> -->
-                    <span class="media-placeholder">Artwork 1</span>
-                </div>
-                <div class="media-item">
-                    <!-- <img src="images/gallery-4.png" alt="Artwork 2"> -->
-                    <span class="media-placeholder">Artwork 2</span>
-                </div>
-            </div>
+});
+</script>
 
-            <div class="section-footer">
-                <a href="gallery.html" class="text-link">Open full gallery</a>
-            </div>
-        </section>
-
-        <!-- WIKI / DOCS -->
-        <section class="section alt" id="wiki">
-            <div class="section-header">
-                <h2>Wiki &amp; Documentation</h2>
-                <p>Link to docs about your game’s mechanics and world-building.</p>
-            </div>
-
-            <div class="wiki-grid">
-                <article class="card">
-                    <h3 class="card-title">Game Mechanics</h3>
-                    <p class="card-body">
-                        Explain combat, movement, progression, currencies, etc.
-                    </p>
-                    <a href="#!" class="card-link">Open mechanics docs →</a>
-                </article>
-
-                <article class="card">
-                    <h3 class="card-title">Lore &amp; World</h3>
-                    <p class="card-body">
-                        Races, factions, history, and locations in your universe.
-                    </p>
-                    <a href="#!" class="card-link">Read lore articles →</a>
-                </article>
-
-                <article class="card">
-                    <h3 class="card-title">Characters</h3>
-                    <p class="card-body">
-                        Main cast, NPCs, and enemies – bios, abilities, and relationships.
-                    </p>
-                    <a href="#!" class="card-link">View character list →</a>
-                </article>
-            </div>
-        </section>
-
-        <!-- FAQ -->
-        <section class="section" id="faq">
-            <div class="section-header">
-                <h2>FAQ</h2>
-                <p>Answer common questions players might have.</p>
-            </div>
-
-            <div class="faq-list">
-                <details class="faq-item">
-                    <summary>What platforms will the game release on?</summary>
-                    <p>Write your answer here (PC, consoles, etc.).</p>
-                </details>
-
-                <details class="faq-item">
-                    <summary>When will the game be released?</summary>
-                    <p>Talk about your current estimated timeline and that it may change.</p>
-                </details>
-
-                <details class="faq-item">
-                    <summary>Is there multiplayer / co-op?</summary>
-                    <p>Explain what you’re planning and which modes you’re focusing on.</p>
-                </details>
-
-                <details class="faq-item">
-                    <summary>Can I share fan art or videos of the game?</summary>
-                    <p>Explain your stance on fan content, streaming, etc.</p>
-                </details>
-            </div>
-        </section>
-
-        <!-- BUY / WISHLIST -->
-        <section class="section alt" id="buy">
-            <div class="section-header">
-                <h2>Buy / Wishlist the Game</h2>
-                <p>Tell people where they can support you.</p>
-            </div>
-
-            <div class="buy-grid">
-                <div class="buy-info">
-                    <p>
-                        Explain your current status: Is there a free demo? Are you on itch.io,
-                        Steam, Epic, or some other store? Add clear buttons with links.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="#!" class="btn primary">Wishlist on Steam</a>
-                        <a href="#!" class="btn secondary">Download Demo</a>
-                    </div>
-                </div>
-
-                <div class="buy-extra">
-                    <h3>Support the Developer</h3>
-                    <p>You can also link Patreon, Ko-fi, or any other support options here.</p>
-                    <ul class="support-list">
-                        <li><a href="#!">Ko-fi</a></li>
-                        <li><a href="#!">Patreon</a></li>
-                        <li><a href="#!">Merch store</a></li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="site-footer">
-        <div class="footer-inner">
-            <div class="footer-left">
-                <p class="footer-title">The Skyrift Poets Project</p>
-                <p class="footer-text">© YOUR NAME / STUDIO – YEAR. All rights reserved.</p>
-            </div>
-            <div class="footer-right">
-                <span class="footer-label">Follow:</span>
-                <a href="#!" class="footer-link">Twitter / X</a>
-                <a href="#!" class="footer-link">YouTube</a>
-                <a href="#!" class="footer-link">Discord</a>
-                <a href="#!" class="footer-link">Itch.io</a>
-            </div>
-        </div>
-    </footer>
 </body>
 </html>
