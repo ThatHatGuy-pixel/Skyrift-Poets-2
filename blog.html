@@ -41,6 +41,24 @@ blog.html:
         </article>
     </div>
 </main>
+<!-- LIGHTBOX WIDGET (paste once per page) -->
+<div class="lightbox-overlay" id="lightboxOverlay" aria-hidden="true">
+  <div class="lightbox-modal" id="lightboxModal" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="lightbox-topbar">
+      <p class="lightbox-title" id="lightboxTitle">Artwork</p>
+      <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">✕</button>
+    </div>
+
+    <div class="lightbox-body">
+      <img class="lightbox-img" id="lightboxImg" alt="" />
+    </div>
+
+    <div class="lightbox-footer">
+      <p class="lightbox-caption" id="lightboxCaption"></p>
+      <button class="lightbox-fullscreen" id="lightboxFullscreen" type="button" aria-label="Fullscreen">⛶</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
