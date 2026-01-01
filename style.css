@@ -269,8 +269,15 @@ body {
 .hero-scene {
   position: relative;
   margin-top: auto;
-  height: 260px;     /* 🔧 change this number if you want */
-  overflow: hidden;  /* ✅ makes the strip clean */
+
+  /* BIGGER strip */
+  height: 520px;              /* <-- make this bigger if you want */
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: radial-gradient(
     ellipse at top,
     rgba(0, 0, 0, 0.4),
@@ -279,12 +286,16 @@ body {
 }
 
 .hero-scene-img {
-  width: 100%;
+  /* show the whole image (no crop) but still large */
   height: 100%;
-  object-fit: cover;           /* ✅ fills the strip */
-  object-position: center top; /* ✅ keeps the top visible */
+  width: auto;
+  object-fit: contain;
   display: block;
+
+  /* stops it looking tiny on wide screens */
+  max-width: min(1120px, 96vw);
 }
+
 
 
 
