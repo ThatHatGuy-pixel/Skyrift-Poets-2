@@ -947,3 +947,30 @@ body.no-scroll {
   overflow: hidden;
 }
 
+/* Prevent background scroll when open */
+body.no-scroll {
+  overflow: hidden;
+}
+
+/* ===========================
+   HIDE TITLE + CAPTION IN FULLSCREEN
+   =========================== */
+
+/* Soft fullscreen (CSS fallback) */
+.lightbox-overlay.soft-fullscreen .lightbox-topbar,
+.lightbox-overlay.soft-fullscreen .lightbox-footer {
+  display: none;
+}
+
+/* Real browser fullscreen */
+.lightbox-modal:fullscreen .lightbox-topbar,
+.lightbox-modal:fullscreen .lightbox-footer {
+  display: none;
+}
+
+/* Let the image fill the screen when bars are hidden */
+.lightbox-overlay.soft-fullscreen .lightbox-img,
+.lightbox-modal:fullscreen .lightbox-img {
+  max-height: calc(100vh - 24px);
+}
+
