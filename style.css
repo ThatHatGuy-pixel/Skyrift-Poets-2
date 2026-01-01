@@ -269,18 +269,20 @@ body {
 .hero-scene {
   position: relative;
   margin-top: auto;
-  height: 140px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  background: radial-gradient(ellipse at top, rgba(0, 0, 0, 0.4), transparent 60%);
+  height: 260px;     /* 🔧 change this number if you want */
+  overflow: hidden;  /* ✅ makes the strip clean */
+  background: radial-gradient(
+    ellipse at top,
+    rgba(0, 0, 0, 0.4),
+    transparent 60%
+  );
 }
 
 .hero-scene-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;     /* shows the whole image */
-  background: #020617;     /* fills any empty space nicely */
+  object-fit: cover;           /* ✅ fills the strip */
+  object-position: center top; /* ✅ keeps the top visible */
   display: block;
 }
 
@@ -663,8 +665,9 @@ body {
   }
 
   .hero-scene {
-    height: 120px;
+    height: 220px;
   }
+
 }
 
 @media (max-width: 720px) {
