@@ -953,22 +953,34 @@ body.no-scroll {
 }
 
 /* ===========================
-   HIDE TITLE + CAPTION IN FULLSCREEN
+   FULLSCREEN: HIDE TEXT, KEEP CLOSE BUTTON
    =========================== */
 
-/* Soft fullscreen (CSS fallback) */
-.lightbox-overlay.soft-fullscreen .lightbox-topbar,
-.lightbox-overlay.soft-fullscreen .lightbox-footer {
+/* Hide title text only */
+.lightbox-overlay.soft-fullscreen .lightbox-title,
+.lightbox-modal:fullscreen .lightbox-title {
   display: none;
 }
 
-/* Real browser fullscreen */
-.lightbox-modal:fullscreen .lightbox-topbar,
+/* Hide bottom caption bar */
+.lightbox-overlay.soft-fullscreen .lightbox-footer,
 .lightbox-modal:fullscreen .lightbox-footer {
   display: none;
 }
 
-/* Let the image fill the screen when bars are hidden */
+/* Float the close button in fullscreen */
+.lightbox-overlay.soft-fullscreen .lightbox-close,
+.lightbox-modal:fullscreen .lightbox-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+}
+
+/* Let the image fully fill the screen */
 .lightbox-overlay.soft-fullscreen .lightbox-img,
 .lightbox-modal:fullscreen .lightbox-img {
   max-height: calc(100vh - 24px);
