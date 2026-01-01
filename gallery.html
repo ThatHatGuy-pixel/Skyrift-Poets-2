@@ -36,23 +36,15 @@
         <p>All screenshots, GIFs, concept art, 3D renders, and progress images.</p>
       </div>
 
-      <!-- Optional filter buttons (basic structure – no JS needed) -->
       <div class="gallery-toolbar">
         <span class="gallery-hint">Tip: replace placeholders with your images.</span>
       </div>
 
       <!-- GALLERY GRID -->
       <div class="gallery-grid">
-        <!-- Replace each placeholder with an <img> or keep the template -->
 
         <a class="gallery-item" href="images/gallery-1.png">
           <div class="gallery-thumb">
-            <!-- <img src="images/gallery-1.png" alt="Screenshot 1"> -->
-
-
-
-            
-     
             <span class="media-placeholder">Screenshot 1</span>
           </div>
           <div class="gallery-caption">
@@ -62,10 +54,9 @@
         </a>
 
         <a class="gallery-item" href="images/gallery-2.png">
-         <div class="gallery-thumb">
-  <img src="images/Space cats.jpg" alt="Screenshot 1">
-</div>
-
+          <div class="gallery-thumb">
+            <img src="images/Space cats.jpg" alt="Screenshot 2">
+          </div>
           <div class="gallery-caption">
             <div class="cap-title">Screenshot 2</div>
             <div class="cap-sub">Combat / UI test</div>
@@ -74,7 +65,6 @@
 
         <a class="gallery-item" href="images/art-1.png">
           <div class="gallery-thumb">
-            <!-- <img src="images/art-1.png" alt="Concept Art 1"> -->
             <span class="media-placeholder">Concept Art 1</span>
           </div>
           <div class="gallery-caption">
@@ -85,7 +75,6 @@
 
         <a class="gallery-item" href="images/render-1.png">
           <div class="gallery-thumb">
-            <!-- <img src="images/render-1.png" alt="3D Render 1"> -->
             <span class="media-placeholder">3D Render 1</span>
           </div>
           <div class="gallery-caption">
@@ -94,7 +83,6 @@
           </div>
         </a>
 
-        <!-- Duplicate these blocks for more items -->
       </div>
 
       <div class="section-footer">
@@ -102,5 +90,50 @@
       </div>
     </section>
   </main>
+
+  <!-- LIGHTBOX OVERLAY -->
+  <div id="lightbox" class="lightbox">
+    <span class="close">&times;</span>
+    <img class="lightbox-img" alt="">
+  </div>
+
+  <!-- LIGHTBOX SCRIPT -->
+  <script>
+    const galleryLinks = document.querySelectorAll(".gallery-item");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.querySelector(".lightbox-img");
+    const closeBtn = document.querySelector(".close");
+
+    galleryLinks.forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault(); // stop page navigation
+
+        // Prefer thumbnail image if present
+        const img = link.querySelector("img");
+        const fullSrc = link.getAttribute("href");
+
+        lightboxImg.src = img ? img.src : fullSrc;
+        lightboxImg.alt = img ? img.alt || "" : "";
+
+        lightbox.style.display = "flex";
+      });
+    });
+
+    const closeLightbox = () => {
+      lightbox.style.display = "none";
+      lightboxImg.src = "";
+    };
+
+    closeBtn.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", e => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeLightbox();
+    });
+  </script>
+
 </body>
 </html>
