@@ -3,6 +3,39 @@
    THEME VARIABLES
    =========================== */
 
+.image-container {
+    position: relative; /* This is crucial. It makes the container the positioning context for its children. */
+    width: 100%; /* Ensures the container takes up the full width */
+    max-height: 600px; /* Optional: Sets a max height for the container */
+    overflow: hidden; /* Optional: Hides any overflowing parts */
+    text-align: center; /* Centers the text horizontally */
+}
+
+.image-container img {
+    width: 100%; /* Makes the image responsive and fill the container width */
+    height: auto;
+    display: block;
+}
+
+.image-title {
+    position: absolute; /* Positions the title relative to the parent container */
+    top: 50%; /* Moves the top edge of the text to the vertical center */
+    left: 50%; /* Moves the left edge of the text to the horizontal center */
+    transform: translate(-50%, -50%); /* Centers the text perfectly by offsetting it by half its own width/height */
+    color: white; /* Makes the text white for better contrast */
+    font-size: 3rem; /* Large font size for the title */
+    font-weight: bold;
+    /* Optional: Add a subtle background or text shadow for better readability on busy images */
+    background-color: rgba(0, 0, 0, 0.4); 
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+
+
+
+
+
 :root {
   --bg: #050815;
   --bg-alt: #0b1020;
