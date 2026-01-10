@@ -165,12 +165,14 @@ body {
 
 .hero {
   position: relative;
-  min-height: 80vh;
-  padding-top: 70px; /* space for nav */
+  height: 100vh;        /* FULL SCREEN */
+  padding-top: 90px;    /* height of your fixed nav */
   display: flex;
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
+}
+
 }
 
 /* 🔁 Replace this with your own background image */
