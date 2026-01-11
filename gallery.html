@@ -37,9 +37,24 @@
         <p>All screenshots, GIFs, concept art, 3D renders, and progress images.</p>
       </div>
 
-      <div class="gallery-toolbar">
-        <span class="gallery-hint">Tip: replace placeholders with your images.</span>
-      </div>
+     <div class="gallery-toolbar">
+  <div class="filter-bar" aria-label="Sort by media type">
+    <span class="filter-label">Sort by:</span>
+
+    <button class="filter-btn" type="button" data-filter="painting">Painting</button>
+    <button class="filter-btn" type="button" data-filter="sketch">Sketch</button>
+    <button class="filter-btn" type="button" data-filter="drawing">Drawing</button>
+    <button class="filter-btn" type="button" data-filter="sculpture">Sculpture</button>
+    <button class="filter-btn" type="button" data-filter="digital">Digital</button>
+    <button class="filter-btn" type="button" data-filter="animation">Animation</button>
+    <button class="filter-btn" type="button" data-filter="3d">3D</button>
+
+    <button class="filter-clear" type="button" id="filterClear">Clear</button>
+  </div>
+
+  <span class="gallery-hint" id="filterHint">Click multiple tags to filter.</span>
+</div>
+
 
       <!-- GALLERY GRID -->
       <div class="gallery-grid">
@@ -66,6 +81,49 @@
             <div class="cap-sub">IT'S ME. Acrylic painting on a piece of scrap cardboard.</div>
           </div>
         </a>
+
+        <!-- test2-->
+        <a class="gallery-item" href="images/Golden%20freddy%20art.jpeg" data-tags="painting">
+  <div class="gallery-thumb">
+    <img src="images/Golden%20freddy%20art.jpeg" alt="Golden Freddy">
+  </div>
+  <div class="gallery-caption">
+    <div class="cap-title">Golden Freddy</div>
+    <div class="cap-sub">IT'S ME. Acrylic painting on a piece of scrap cardboard.</div>
+  </div>
+</a>
+
+<a class="gallery-item" href="images/Space%20cats.jpg" data-tags="digital">
+  <div class="gallery-thumb">
+    <img src="images/Space%20cats.jpg" alt="Space Cats">
+  </div>
+  <div class="gallery-caption">
+    <div class="cap-title">Space Cats</div>
+    <div class="cap-sub">Digital art of Warrior Cats OC's</div>
+  </div>
+</a>
+
+        
+<!-- test-->
+<a class="gallery-item"
+   href="images/Golden%20freddy%20art.jpeg"
+   data-tags="painting">
+
+  <a class="gallery-item"
+   href="images/Space%20cats.jpg"
+   data-tags="digital">
+
+    <a class="gallery-item"
+   href="images/something.jpg"
+   data-tags="sketch,drawing">
+
+      <a class="gallery-item"
+   href="images/shot01.png"
+   data-tags="3d,animation">
+
+
+
+        
 
         <!-- ITEM 3 (Space Cats) -->
         <a class="gallery-item" href="images/Space%20cats.jpg">
@@ -127,8 +185,86 @@
     </div>
   </div>
 
-  <script>
+
   (() => {
+    <script>
+(() => {
+  // --- your existing lightbox code is already here ---
+
+  /* ===========================
+     FILTER LOGIC (multi-select)
+     =========================== */
+
+  const filterButtons = Array.from(document.querySelectorAll(".filter-btn[data-filter]"));
+  const clearBtn = document.getElementById("filterClear");
+  const hint = document.getElementById("filterHint");
+  const items = Array.from(document.querySelectorAll(".gallery-item"));
+
+  // holds active filters
+  const active = new Set();
+
+  function getItemTags(el) {
+    // expects: data-tags="painting,digital,3d"
+    const raw = (el.getAttribute("data-tags") || "").toLowerCase().trim();
+    if (!raw) return [];
+    return raw.split(",").map(s => s.trim()).filter(Boolean);
+  }
+
+  function applyFilters() {
+    // If nothing selected, show all
+    if (active.size === 0) {
+      items.forEach(it => it.classList.remove("is-hidden"));
+      if (hint) hint.textContent = "Click multiple tags to filter.";
+      return;
+    }
+
+    // OR filtering: show item if it matches ANY selected tag
+    items.forEach(it => {
+      const tags = getItemTags(it);
+      const match = tags.some(t => active.has(t));
+      it.classList.toggle("is-hidden", !match);
+    });
+
+    if (hint) hint.textContent = `Showing: ${Array.from(active).join(", ")}`;
+  }
+
+  function toggleButton(btn) {
+    const key = (btn.getAttribute("data-filter") || "").toLowerCase();
+    if (!key) return;
+
+    if (active.has(key)) {
+      active.delete(key);
+      btn.classList.remove("is-active");
+      btn.setAttribute("aria-pressed", "false");
+    } else {
+      active.add(key);
+      btn.classList.add("is-active");
+      btn.setAttribute("aria-pressed", "true");
+    }
+
+    applyFilters();
+  }
+
+  filterButtons.forEach(btn => {
+    btn.setAttribute("aria-pressed", "false");
+    btn.addEventListener("click", () => toggleButton(btn));
+  });
+
+  clearBtn?.addEventListener("click", () => {
+    active.clear();
+    filterButtons.forEach(b => {
+      b.classList.remove("is-active");
+      b.setAttribute("aria-pressed", "false");
+    });
+    applyFilters();
+  });
+
+  // run once on load
+  applyFilters();
+})();
+</script>
+
+  
     const overlay = document.getElementById("lightboxOverlay");
     const modal = document.getElementById("lightboxModal");
     const img = document.getElementById("lightboxImg");
@@ -221,6 +357,16 @@
     });
   })();
   </script>
+
+        <a class="gallery-item" href="images/Golden%20freddy%20art.jpeg" data-tags="painting">
+  <div class="gallery-thumb">
+    <img src="images/Golden%20freddy%20art.jpeg" alt="Golden Freddy">
+  </div>
+  <div class="gallery-caption">
+    <div class="cap-title">Golden Freddy</div>
+    <div class="cap-sub">IT'S ME. Acrylic painting on a piece of scrap cardboard.</div>
+  </div>
+</a>
 
 </body>
 </html>
