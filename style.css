@@ -173,7 +173,7 @@ body {
   overflow: hidden;
 }
 
-}
+
 
 /* 🔁 Replace this with your own background image */
 .hero::before {
@@ -960,10 +960,9 @@ body{
 
 .lightbox-overlay.soft-fullscreen .lightbox-img {
   max-height: calc(100vh - 24px - 54px - 70px);
+}
 
-
-
-   /* Topbar layout */
+/* Topbar layout */
 .lightbox-head {
   display: flex;
   flex-direction: column;
@@ -995,39 +994,47 @@ body{
   color: var(--accent-strong);
 }
 
-/* Fullscreen behavior:
-   hide text + tags, but keep buttons (X and ⛶) */
+/* Put fullscreen button bottom-right (in the footer) */
+.lightbox-footer {
+  position: relative;
+}
+
+.lightbox-fullscreen {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+}
+
+/* Fullscreen: hide title/tags/caption text, keep buttons usable */
 .lightbox-overlay.soft-fullscreen .lightbox-title,
 .lightbox-modal:fullscreen .lightbox-title,
 .lightbox-overlay.soft-fullscreen .lightbox-tags,
 .lightbox-modal:fullscreen .lightbox-tags,
-.lightbox-overlay.soft-fullscreen .lightbox-footer,
-.lightbox-modal:fullscreen .lightbox-footer {
+.lightbox-overlay.soft-fullscreen .lightbox-caption,
+.lightbox-modal:fullscreen .lightbox-caption {
   display: none;
 }
 
-/* keep topbar buttons visible in fullscreen */
-.lightbox-overlay.soft-fullscreen .lightbox-topbar,
-.lightbox-modal:fullscreen .lightbox-topbar {
+/* Keep the close button visible in fullscreen */
+.lightbox-overlay.soft-fullscreen .lightbox-close,
+.lightbox-modal:fullscreen .lightbox-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  left: 12px;
-  z-index: 3;
-  background: transparent;
-  border-bottom: none;
-  justify-content: flex-end;
-}
-
-/* make buttons a bit more readable over image */
-.lightbox-overlay.soft-fullscreen .lightbox-actions .lightbox-close,
-.lightbox-overlay.soft-fullscreen .lightbox-actions .lightbox-fullscreen,
-.lightbox-modal:fullscreen .lightbox-actions .lightbox-close,
-.lightbox-modal:fullscreen .lightbox-actions .lightbox-fullscreen {
+  top: 14px;
+  right: 14px;
+  z-index: 5;
   background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(6px);
 }
 
+/* Keep fullscreen button visible in fullscreen (so you can minimise) */
+.lightbox-overlay.soft-fullscreen .lightbox-fullscreen,
+.lightbox-modal:fullscreen .lightbox-fullscreen {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
 }
 
 /* Prevent background scroll when open */
@@ -1050,10 +1057,7 @@ body.no-scroll {
   display: none;
 }
 
-.lightbox-overlay.soft-fullscreen .lightbox-footer,
-.lightbox-modal:fullscreen .lightbox-footer {
-  display: none;
-}
+
 
 
 /* Float the close button in fullscreen */
