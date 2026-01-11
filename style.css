@@ -1006,4 +1006,59 @@ body.no-scroll {
   max-height: calc(100vh - 24px);
 }
 
+/* ===========================
+   GALLERY FILTER BUTTONS
+   =========================== */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.filter-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-right: 0.2rem;
+}
+
+.filter-btn,
+.filter-clear {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.75);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  user-select: none;
+}
+
+.filter-btn:hover,
+.filter-clear:hover {
+  transform: translateY(-1px);
+  border-color: rgba(250, 204, 21, 0.65);
+}
+
+.filter-btn.is-active {
+  border-color: rgba(250, 204, 21, 0.9);
+  background: rgba(250, 204, 21, 0.12);
+  box-shadow: 0 12px 28px rgba(250, 204, 21, 0.12);
+}
+
+.filter-clear {
+  color: var(--accent-strong);
+  border-color: rgba(250, 204, 21, 0.55);
+  background: rgba(250, 204, 21, 0.06);
+}
+
+.gallery-item.is-hidden {
+  display: none !important;
+}
 
