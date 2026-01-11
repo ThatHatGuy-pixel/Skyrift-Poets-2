@@ -165,13 +165,13 @@ body {
 
 .hero {
   position: relative;
-  height: 100vh;        /* FULL SCREEN */
-  padding-top: 90px;    /* height of your fixed nav */
+  min-height: calc(100vh - 90px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 }
+
 
 
 
@@ -271,34 +271,27 @@ body {
 /* HERO BOTTOM STRIP */
 
 .hero-scene {
-  position: relative;
-  margin-top: auto;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 18px auto 0;
+  padding: 0 16px;
 
-  /* BIGGER strip */
-  height: 520px;              /* <-- make this bigger if you want */
-  overflow: hidden;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: radial-gradient(
-    ellipse at top,
-    rgba(0, 0, 0, 0.4),
-    transparent 60%
-  );
+  height: auto;
+  overflow: visible;
 }
+
 
 .hero-scene-img {
-  /* show the whole image (no crop) but still large */
-  height: 100%;
-  width: auto;
-  object-fit: contain;
   display: block;
-
-  /* stops it looking tiny on wide screens */
-  max-width: min(1120px, 96vw);
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  object-position: center;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
 }
+
 
 
 
@@ -679,9 +672,6 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .hero-scene {
-    height: 220px;
-  }
 
 }
 
