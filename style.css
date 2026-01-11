@@ -960,6 +960,74 @@ body{
 
 .lightbox-overlay.soft-fullscreen .lightbox-img {
   max-height: calc(100vh - 24px - 54px - 70px);
+
+
+
+   /* Topbar layout */
+.lightbox-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lightbox-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Tag chips */
+.lightbox-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lightbox-tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  background: rgba(250, 204, 21, 0.08);
+  color: var(--accent-strong);
+}
+
+/* Fullscreen behavior:
+   hide text + tags, but keep buttons (X and ⛶) */
+.lightbox-overlay.soft-fullscreen .lightbox-title,
+.lightbox-modal:fullscreen .lightbox-title,
+.lightbox-overlay.soft-fullscreen .lightbox-tags,
+.lightbox-modal:fullscreen .lightbox-tags,
+.lightbox-overlay.soft-fullscreen .lightbox-footer,
+.lightbox-modal:fullscreen .lightbox-footer {
+  display: none;
+}
+
+/* keep topbar buttons visible in fullscreen */
+.lightbox-overlay.soft-fullscreen .lightbox-topbar,
+.lightbox-modal:fullscreen .lightbox-topbar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  left: 12px;
+  z-index: 3;
+  background: transparent;
+  border-bottom: none;
+  justify-content: flex-end;
+}
+
+/* make buttons a bit more readable over image */
+.lightbox-overlay.soft-fullscreen .lightbox-actions .lightbox-close,
+.lightbox-overlay.soft-fullscreen .lightbox-actions .lightbox-fullscreen,
+.lightbox-modal:fullscreen .lightbox-actions .lightbox-close,
+.lightbox-modal:fullscreen .lightbox-actions .lightbox-fullscreen {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+}
+
 }
 
 /* Prevent background scroll when open */
@@ -982,11 +1050,11 @@ body.no-scroll {
   display: none;
 }
 
-/* Hide bottom caption bar */
 .lightbox-overlay.soft-fullscreen .lightbox-footer,
 .lightbox-modal:fullscreen .lightbox-footer {
   display: none;
 }
+
 
 /* Float the close button in fullscreen */
 .lightbox-overlay.soft-fullscreen .lightbox-close,
