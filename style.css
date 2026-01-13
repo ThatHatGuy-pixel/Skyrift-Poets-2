@@ -1,4 +1,3 @@
-
 /* ===========================
    THEME VARIABLES
    =========================== */
@@ -886,6 +885,22 @@ body{
   border-color: rgba(250, 204, 21, 0.7);
 }
 
+.lightbox-body {
+  position: relative;
+  padding: 14px;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: calc(100vh - 48px - 54px - 70px);
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.65);
+}
+
 .lightbox-footer {
   display: flex;
   align-items: center;
@@ -1030,150 +1045,6 @@ body.no-scroll {
 .lightbox-modal:fullscreen .lightbox-img {
   max-height: calc(100vh - 24px);
 }
-/* ===========================
-   SHORTS-STYLE FEED (SCROLL + SNAP)
-   =========================== */
-
-/* Let the feed own the scrolling (not the body) */
-.lightbox-body{
-  padding: 0;            /* remove padding so snapping feels clean */
-  overflow: hidden;      /* important: the feed scrolls, not this */
-}
-
-/* Vertical snap container */
-.lightbox-feed{
-  height: 100%;
-  max-height: none;
-  overflow-y: auto;
-  overscroll-behavior: contain;      /* stops “throwing” the page behind */
-  scroll-snap-type: y mandatory;     /* the snap “resistance” */
-  scroll-behavior: smooth;
-  padding: 22px 0;                  /* gives a little peek/spacing */
-}
-
-/* Each slide */
-.lightbox-slide{
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
-  min-height: calc(100% - 44px);    /* leave room for the peeks */
-  display: grid;
-  place-items: center;
-  padding: 12px 16px;
-}
-
-/* Frame that holds image/video */
-.lightbox-frame{
-  width: min(980px, 92vw);
-  height: min(72vh, 680px);
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(2, 6, 23, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 18px 55px rgba(0,0,0,0.55);
-  display: grid;
-  place-items: center;
-  position: relative;
-}
-
-/* Media */
-.lightbox-frame img,
-.lightbox-frame video{
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* keep full artwork visible */
-  display: block;
-}
-
-/* Slide text (title + description) */
-.lightbox-meta{
-  width: min(980px, 92vw);
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.45;
-}
-
-.lightbox-meta .meta-title{
-  color: var(--text);
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-
-.lightbox-meta .meta-desc{
-  margin: 0;
-}
-
-/* Make the old single-image sizing irrelevant */
-.lightbox-img{ display:none; }
-
-/* ===========================
-   SHORTS-STYLE FEED (SCROLL + SNAP)
-   =========================== */
-
-.lightbox-body{
-  padding: 0;
-  overflow: hidden;
-}
-
-/* Scroll container */
-.lightbox-feed{
-  height: 100%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-snap-type: y mandatory;
-  scroll-snap-stop: always;
-  padding: 22px 0; /* creates the “peek” above/below */
-}
-
-/* One “short” */
-.lightbox-slide{
-  scroll-snap-align: center;
-  min-height: calc(100% - 44px);
-  display: grid;
-  place-items: center;
-  padding: 12px 16px;
-}
-
-/* Media frame */
-.lightbox-frame{
-  width: min(980px, 92vw);
-  height: min(72vh, 680px);
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(2, 6, 23, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 18px 55px rgba(0,0,0,0.55);
-  display: grid;
-  place-items: center;
-}
-
-/* The media itself */
-.lightbox-frame img,
-.lightbox-frame video{
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* change to cover if you want crop-fill */
-  display: block;
-}
-
-/* Optional: per-slide text under the frame */
-.lightbox-meta{
-  width: min(980px, 92vw);
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.45;
-}
-
-.lightbox-meta .meta-title{
-  color: var(--text);
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-
-.lightbox-meta .meta-desc{
-  margin: 0;
-}
 
 /* ===========================
    GALLERY FILTER BUTTONS
@@ -1230,79 +1101,4 @@ body.no-scroll {
 .gallery-item.is-hidden {
   display: none !important;
 }
-
-/* ===========================
-   SHORTS-STYLE FEED (SCROLL + SNAP)
-   =========================== */
-
-/* Make the modal body NOT scroll — the feed scrolls */
-.lightbox-body{
-  padding: 0;
-  overflow: hidden;
-  display: block;
-}
-
-/* The vertical snap container */
-.lightbox-feed{
-  height: 100%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-snap-type: y mandatory;
-  scroll-snap-stop: always;
-  padding: 22px 0; /* creates “peek” above/below */
-}
-
-/* Each “short” slide */
-.lightbox-slide{
-  scroll-snap-align: center;
-  min-height: calc(100% - 44px);
-  display: grid;
-  place-items: center;
-  padding: 12px 16px;
-}
-
-/* Media frame */
-.lightbox-frame{
-  width: min(980px, 92vw);
-  height: min(72vh, 680px);
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(2, 6, 23, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 18px 55px rgba(0,0,0,0.55);
-  display: grid;
-  place-items: center;
-}
-
-/* Image/video */
-.lightbox-frame img,
-.lightbox-frame video{
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* change to cover if you want crop-fill */
-  display: block;
-}
-
-/* Per-slide text below media */
-.lightbox-meta{
-  width: min(980px, 92vw);
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.45;
-}
-
-.lightbox-meta .meta-title{
-  color: var(--text);
-  font-weight: 600;
-  margin: 0 0 4px;
-}
-
-.lightbox-meta .meta-desc{
-  margin: 0;
-}
-
-/* We no longer use the single-image element */
-.lightbox-img{ display:none; }
-
 
