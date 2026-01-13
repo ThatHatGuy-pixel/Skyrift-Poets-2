@@ -175,76 +175,150 @@
   </div>
 
 
-   <script>
+<script>
 (() => {
   // ===========================
-  // LIGHTBOX + TAGS
+  // ELEMENTS
   // ===========================
   const overlay = document.getElementById("lightboxOverlay");
-  const modal = document.getElementById("lightboxModal");
- const feed = document.getElementById("lightboxFeed");
+  const modal   = document.getElementById("lightboxModal");
+  const feed    = document.getElementById("lightboxFeed");
+
   const titleEl = document.getElementById("lightboxTitle");
-  const capEl = document.getElementById("lightboxCaption");
-  const tagsEl = document.getElementById("lightboxTags");
+  const capEl   = document.getElementById("lightboxCaption");
+  const tagsEl  = document.getElementById("lightboxTags");
+
   const btnClose = document.getElementById("lightboxClose");
-  const btnFS = document.getElementById("lightboxFullscreen");
+  const btnFS    = document.getElementById("lightboxFullscreen");
 
-if (!overlay || !modal || !feed) return;
-
+  if (!overlay || !modal || !feed) return;
 
   let lastFocus = null;
+  let vidObserver = null;
+
+  // ===========================
+  // HELPERS
+  // ===========================
+  function looksLikeMedia(href="") {
+    return (
+      /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(href) ||
+      href.includes("images/")
+    );
+  }
+
+  function isVideoFile(src="") {
+    return /\.(mp4|webm|mov|m4v|ogg)$/i.test(src);
+  }
+
+  function escapeHTML(str="") {
+    return str.replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
 
   function renderTags(tags) {
     if (!tagsEl) return;
-
     const list = (tags || "")
       .toLowerCase()
       .split(",")
       .map(t => t.trim())
       .filter(Boolean);
 
-    tagsEl.innerHTML = list.map(t => `<span class="lightbox-tag">${t}</span>`).join("");
+    tagsEl.innerHTML = list.map(t => `<span class="lightbox-tag">${escapeHTML(t)}</span>`).join("");
   }
 
-  function openLightbox({ src, title = "", caption = "", alt = "", tags = "" }) {
-    if (!src) return;
+  function getTitle(a){
+    return (
+      a.querySelector(".cap-title")?.textContent?.trim() ||
+      a.getAttribute("data-title") ||
+      ""
+    );
+  }
+
+  function getCaption(a){
+    return (
+      a.querySelector(".cap-sub")?.textContent?.trim() ||
+      a.getAttribute("data-caption") ||
+      ""
+    );
+  }
+
+  function getTags(a){
+    return a.getAttribute("data-tags") || "";
+  }
+
+  function getVisibleMediaAnchors(){
+    return Array.from(document.querySelectorAll("a.gallery-item[href]"))
+      .filter(a => !a.classList.contains("is-hidden"))
+      .filter(a => looksLikeMedia(a.getAttribute("href") || ""));
+  }
+
+  // ===========================
+  // FEED BUILD + OPEN/CLOSE
+  // ===========================
+  function buildFeed(items){
+    feed.innerHTML = items.map((a, i) => {
+      const href = a.getAttribute("href") || "";
+      const t = getTitle(a);
+      const sub = getCaption(a);
+      const tags = getTags(a);
+
+      const media = isVideoFile(href)
+        ? `<video class="lb-media" src="${escapeHTML(href)}" playsinline muted loop preload="metadata"></video>`
+        : `<img class="lb-media" src="${escapeHTML(href)}" alt="${escapeHTML(t || "Artwork")}" loading="eager">`;
+
+      return `
+        <section class="lightbox-slide"
+          data-index="${i}"
+          data-title="${escapeHTML(t)}"
+          data-caption="${escapeHTML(sub)}"
+          data-tags="${escapeHTML(tags)}">
+          <div class="lightbox-frame">${media}</div>
+          <div class="lightbox-meta">
+            <p class="meta-title">${escapeHTML(t || "Artwork")}</p>
+            <p class="meta-desc">${escapeHTML(sub || "")}</p>
+          </div>
+        </section>
+      `;
+    }).join("");
+  }
+
+  function openLightboxAt(startIndex){
+    const items = getVisibleMediaAnchors();
+    if (items.length === 0) return;
 
     lastFocus = document.activeElement;
 
-    img.src = src;
-    img.alt = alt || title || "Image";
+    buildFeed(items);
 
-    if (titleEl) titleEl.textContent = title || "Artwork";
-    if (capEl) capEl.textContent = caption || "";
-    renderTags(tags);
-    function isVideoFile(src){
-  return /\.(mp4|webm|mov|m4v|ogg)$/i.test(src);
-}
-
-function escapeHTML(str=""){
-  return str.replace(/[&<>"']/g, (m) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
-}
-
-
-    // IMPORTANT: open as normal modal first (NOT fullscreen)
     overlay.classList.remove("soft-fullscreen");
     overlay.classList.add("open");
     overlay.setAttribute("aria-hidden", "false");
     document.body.classList.add("no-scroll");
 
+    const idx = Math.max(0, Math.min(startIndex, items.length - 1));
+
+    requestAnimationFrame(() => {
+      const target = feed.querySelector(`.lightbox-slide[data-index="${idx}"]`);
+      if (target) target.scrollIntoView({ block: "center" });
+      updateHeaderFromNearest();
+      setupVideoObserver();
+    });
+
     btnClose && btnClose.focus();
   }
 
-  function closeLightbox() {
+  function closeLightbox(){
     overlay.classList.remove("open");
     overlay.classList.remove("soft-fullscreen");
     overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll");
 
+    if (vidObserver) {
+      vidObserver.disconnect();
+      vidObserver = null;
+    }
     feed.innerHTML = "";
-
     if (tagsEl) tagsEl.innerHTML = "";
 
     if (document.fullscreenElement) {
@@ -254,6 +328,77 @@ function escapeHTML(str=""){
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
   }
 
+  // ===========================
+  // HEADER UPDATES (TITLE/CAPTION/TAGS)
+  // ===========================
+  function updateHeaderFromNearest(){
+    const slides = Array.from(feed.querySelectorAll(".lightbox-slide"));
+    if (slides.length === 0) return;
+
+    const box = feed.getBoundingClientRect();
+    const centerY = box.top + box.height / 2;
+
+    let best = null;
+    let bestDist = Infinity;
+
+    for (const s of slides){
+      const r = s.getBoundingClientRect();
+      const sCenter = r.top + r.height / 2;
+      const d = Math.abs(sCenter - centerY);
+      if (d < bestDist){
+        bestDist = d;
+        best = s;
+      }
+    }
+
+    if (!best) return;
+
+    const t = best.getAttribute("data-title") || "Artwork";
+    const c = best.getAttribute("data-caption") || "";
+    const tags = best.getAttribute("data-tags") || "";
+
+    if (titleEl) titleEl.textContent = t || "Artwork";
+    if (capEl) capEl.textContent = c || "";
+    renderTags(tags);
+  }
+
+  let feedTick = false;
+  feed.addEventListener("scroll", () => {
+    if (!overlay.classList.contains("open")) return;
+    if (feedTick) return;
+    feedTick = true;
+    requestAnimationFrame(() => {
+      feedTick = false;
+      updateHeaderFromNearest();
+    });
+  });
+
+  // ===========================
+  // VIDEO AUTOPLAY ONLY FOR ACTIVE SLIDE
+  // ===========================
+  function setupVideoObserver(){
+    if (vidObserver) vidObserver.disconnect();
+
+    const videos = Array.from(feed.querySelectorAll("video.lb-media"));
+    if (videos.length === 0) return;
+
+    vidObserver = new IntersectionObserver((entries) => {
+      for (const e of entries){
+        const v = e.target;
+        if (e.isIntersecting && e.intersectionRatio > 0.65){
+          v.play().catch(()=>{});
+        } else {
+          v.pause();
+        }
+      }
+    }, { root: feed, threshold: [0.65] });
+
+    videos.forEach(v => vidObserver.observe(v));
+  }
+
+  // ===========================
+  // EVENTS
+  // ===========================
   btnClose && btnClose.addEventListener("click", closeLightbox);
 
   overlay.addEventListener("click", (e) => {
@@ -265,7 +410,7 @@ function escapeHTML(str=""){
     if (e.key === "Escape") closeLightbox();
   });
 
-  // Fullscreen toggle
+  // Fullscreen toggle (same as before)
   btnFS && btnFS.addEventListener("click", async () => {
     if (!overlay.classList.contains("open")) return;
 
@@ -276,318 +421,32 @@ function escapeHTML(str=""){
         await document.exitFullscreen();
       }
     } catch (err) {
-      // Fallback if fullscreen blocked
       overlay.classList.toggle("soft-fullscreen");
     }
   });
 
   document.addEventListener("fullscreenchange", () => {
-    // When exiting real fullscreen, ensure fallback class is off
     if (!document.fullscreenElement) {
       overlay.classList.remove("soft-fullscreen");
     }
   });
-  function updateHeaderFromNearest(){
-  // find the slide nearest to the center of the feed viewport
-  const slides = Array.from(feed.querySelectorAll(".lightbox-slide"));
-  if (slides.length === 0) return;
 
-  const box = feed.getBoundingClientRect();
-  const centerY = box.top + box.height / 2;
-
-  let best = null;
-  let bestDist = Infinity;
-
-  for (const s of slides){
-    const r = s.getBoundingClientRect();
-    const sCenter = r.top + r.height / 2;
-    const d = Math.abs(sCenter - centerY);
-    if (d < bestDist){
-      bestDist = d;
-      best = s;
-    }
-  }
-
-  if (!best) return;
-
-  const t = best.getAttribute("data-title") || "Artwork";
-  const c = best.getAttribute("data-caption") || "";
-  const tags = best.getAttribute("data-tags") || "";
-
-  if (titleEl) titleEl.textContent = t || "Artwork";
-  if (capEl) capEl.textContent = c || "";
-  renderTags(tags);
-}
-
-// update header while scrolling (throttled)
-let feedTick = false;
-feed.addEventListener("scroll", () => {
-  if (!overlay.classList.contains("open")) return;
-  if (feedTick) return;
-  feedTick = true;
-  requestAnimationFrame(() => {
-    feedTick = false;
-    updateHeaderFromNearest();
-  });
-});
-
-
-   // ===========================
-  // SCROLL THROUGH ARTWORKS (prev/next)
-  // ===========================
-
-  const allAnchors = Array.from(document.querySelectorAll("a.gallery-item[href]"));
-
-  function looksLikeImageHref(href) {
-    return (
-      /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(href) ||
-      href.includes("images/")
-    );
-  }
-
-  function getAnchorData(a) {
-    const href = a.getAttribute("href") || "";
-    const t =
-      a.querySelector(".cap-title")?.textContent?.trim() ||
-      a.getAttribute("data-title") ||
-      "";
-    const sub =
-      a.querySelector(".cap-sub")?.textContent?.trim() ||
-      a.getAttribute("data-caption") ||
-      "";
-    const tags = a.getAttribute("data-tags") || "";
-    return { href, title: t, caption: sub, tags };
-  }
-
-  // Build the "scrollable" list from currently-visible (not filtered out) items
-  let scrollList = [];
-  let currentIndex = -1;
-
-  function rebuildScrollList() {
-    scrollList = allAnchors.filter((a) => {
+  // Click any gallery item -> open at that index (respects filters)
+  document.querySelectorAll("a.gallery-item[href]").forEach((a) => {
+    a.addEventListener("click", (e) => {
       const href = a.getAttribute("href") || "";
-      if (!looksLikeImageHref(href)) return false;
-      if (a.classList.contains("is-hidden")) return false;
-      return true;
+      if (!looksLikeMedia(href)) return;
+
+      e.preventDefault();
+
+      const visible = getVisibleMediaAnchors();
+      const idx = visible.indexOf(a);
+      openLightboxAt(Math.max(0, idx));
     });
-  }
-
-  function openFromIndex(idx) {
-    rebuildScrollList();
-    if (scrollList.length === 0) return;
-
-    // clamp
-    if (idx < 0) idx = 0;
-    if (idx > scrollList.length - 1) idx = scrollList.length - 1;
-
-    currentIndex = idx;
-
-    const a = scrollList[currentIndex];
-    const { href, title, caption, tags } = getAnchorData(a);
-
-   function openLightbox({ startIndex = 0 } = {}) {
-  lastFocus = document.activeElement;
-
-  // build list of currently visible items (respects filters)
-  const items = Array.from(document.querySelectorAll("a.gallery-item[href]"))
-    .filter(a => !a.classList.contains("is-hidden"))
-    .filter(a => {
-      const href = a.getAttribute("href") || "";
-      return /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(href) || href.includes("images/");
-    });
-
-  if (items.length === 0) return;
-
-  // Build feed slides
-  feed.innerHTML = items.map((a, i) => {
-    const href = a.getAttribute("href") || "";
-    const t =
-      a.querySelector(".cap-title")?.textContent?.trim() ||
-      a.getAttribute("data-title") || "";
-    const sub =
-      a.querySelector(".cap-sub")?.textContent?.trim() ||
-      a.getAttribute("data-caption") || "";
-    const tags = a.getAttribute("data-tags") || "";
-
-    const media = isVideoFile(href)
-      ? `<video class="lb-media" src="${escapeHTML(href)}" playsinline muted loop preload="metadata"></video>`
-      : `<img class="lb-media" src="${escapeHTML(href)}" alt="${escapeHTML(t || "Artwork")}" loading="eager">`;
-
-    return `
-      <section class="lightbox-slide" data-index="${i}" data-title="${escapeHTML(t)}" data-caption="${escapeHTML(sub)}" data-tags="${escapeHTML(tags)}">
-        <div class="lightbox-frame">${media}</div>
-        <div class="lightbox-meta">
-          <p class="meta-title">${escapeHTML(t || "Artwork")}</p>
-          <p class="meta-desc">${escapeHTML(sub || "")}</p>
-        </div>
-      </section>
-    `;
-  }).join("");
-
-  // open overlay
-  overlay.classList.remove("soft-fullscreen");
-  overlay.classList.add("open");
-  overlay.setAttribute("aria-hidden", "false");
-  document.body.classList.add("no-scroll");
-
-  // jump to the clicked slide
-  const clamped = Math.max(0, Math.min(startIndex, items.length - 1));
-  requestAnimationFrame(() => {
-    const target = feed.querySelector(`.lightbox-slide[data-index="${clamped}"]`);
-    if (target) target.scrollIntoView({ block: "center" });
-    updateHeaderFromNearest(); // set title/tags at top
   });
-let vidObserver = null;
-
-function setupVideoObserver(){
-  if (vidObserver) vidObserver.disconnect();
-
-  const videos = Array.from(feed.querySelectorAll("video.lb-media"));
-  if (videos.length === 0) return;
-
-  vidObserver = new IntersectionObserver((entries) => {
-    for (const e of entries){
-      const v = e.target;
-      if (e.isIntersecting && e.intersectionRatio > 0.65){
-        v.play().catch(()=>{});
-      } else {
-        v.pause();
-      }
-    }
-  }, { root: feed, threshold: [0.65] });
-
-  videos.forEach(v => vidObserver.observe(v));
-}
-
-  btnClose && btnClose.focus();
-
-  // ---- video auto-play on the current slide ----
-  setupVideoObserver();
-}
-
-
-  function openFromAnchor(a) {
-    rebuildScrollList();
-    const idx = scrollList.indexOf(a);
-    currentIndex = idx >= 0 ? idx : 0;
-
-    const { href, title, caption, tags } = getAnchorData(a);
-    openLightbox({ src: href, title, caption, alt: title, tags });
-  }
-
-  function goNext() {
-    if (!overlay.classList.contains("open")) return;
-    rebuildScrollList();
-    if (scrollList.length === 0) return;
-
-    const next = Math.min(currentIndex + 1, scrollList.length - 1);
-    if (next === currentIndex) return;
-    openFromIndex(next);
-  }
-
-  function goPrev() {
-    if (!overlay.classList.contains("open")) return;
-    rebuildScrollList();
-    if (scrollList.length === 0) return;
-
-    const prev = Math.max(currentIndex - 1, 0);
-    if (prev === currentIndex) return;
-    openFromIndex(prev);
-  }
-
-document.querySelectorAll("a.gallery-item[href]").forEach((a) => {
-  a.addEventListener("click", (e) => {
-    const href = a.getAttribute("href") || "";
-    const ok = /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(href) || href.includes("images/");
-    if (!ok) return;
-
-    e.preventDefault();
-
-    // build the same visible list to find index
-    const visible = Array.from(document.querySelectorAll("a.gallery-item[href]"))
-      .filter(x => !x.classList.contains("is-hidden"))
-      .filter(x => {
-        const h = x.getAttribute("href") || "";
-        return /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(h) || h.includes("images/");
-      });
-
-    const idx = visible.indexOf(a);
-    openLightbox({ startIndex: Math.max(0, idx) });
-  });
-});
-
-
-  // Wheel / trackpad scroll -> next/prev (debounced)
-  let wheelLock = false;
-  function wheelStep(deltaY) {
-    if (wheelLock) return;
-    wheelLock = true;
-    setTimeout(() => (wheelLock = false), 240);
-
-    if (deltaY > 0) goNext();
-    if (deltaY < 0) goPrev();
-  }
-
-  overlay.addEventListener(
-    "wheel",
-    (e) => {
-      if (!overlay.classList.contains("open")) return;
-      e.preventDefault();
-      wheelStep(e.deltaY);
-    },
-    { passive: false }
-  );
-
-  // Keyboard navigation
-  document.addEventListener("keydown", (e) => {
-    if (!overlay.classList.contains("open")) return;
-
-    if (e.key === "ArrowDown" || e.key === "PageDown") {
-      e.preventDefault();
-      goNext();
-    }
-    if (e.key === "ArrowUp" || e.key === "PageUp") {
-      e.preventDefault();
-      goPrev();
-    }
-  });
-
-  // Touch swipe (mobile): swipe up = next, swipe down = prev
-  let touchStartY = null;
-
-  overlay.addEventListener(
-    "touchstart",
-    (e) => {
-      if (!overlay.classList.contains("open")) return;
-      touchStartY = e.touches?.[0]?.clientY ?? null;
-    },
-    { passive: true }
-  );
-
-  overlay.addEventListener(
-    "touchend",
-    (e) => {
-      if (!overlay.classList.contains("open")) return;
-      if (touchStartY == null) return;
-
-      const endY = e.changedTouches?.[0]?.clientY ?? null;
-      if (endY == null) return;
-
-      const dy = endY - touchStartY;
-      touchStartY = null;
-
-      // threshold to avoid accidental tiny swipes
-      if (Math.abs(dy) < 40) return;
-
-      if (dy < 0) goNext(); // swipe up
-      else goPrev(); // swipe down
-    },
-    { passive: true }
-  );
-
 
   // ===========================
-  // FILTER LOGIC (multi-select)
+  // FILTER LOGIC (your original, unchanged)
   // ===========================
   const filterButtons = Array.from(
     document.querySelectorAll(".filter-btn[data-filter]")
@@ -654,6 +513,7 @@ document.querySelectorAll("a.gallery-item[href]").forEach((a) => {
   applyFilters();
 })();
 </script>
+
 
 
 
