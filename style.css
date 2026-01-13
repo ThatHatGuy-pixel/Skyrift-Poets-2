@@ -1046,6 +1046,82 @@ body.no-scroll {
 .lightbox-modal:fullscreen .lightbox-img {
   max-height: calc(100vh - 24px);
 }
+/* ===========================
+   SHORTS-STYLE FEED (SCROLL + SNAP)
+   =========================== */
+
+/* Let the feed own the scrolling (not the body) */
+.lightbox-body{
+  padding: 0;            /* remove padding so snapping feels clean */
+  overflow: hidden;      /* important: the feed scrolls, not this */
+}
+
+/* Vertical snap container */
+.lightbox-feed{
+  height: 100%;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;      /* stops “throwing” the page behind */
+  scroll-snap-type: y mandatory;     /* the snap “resistance” */
+  scroll-behavior: smooth;
+  padding: 22px 0;                  /* gives a little peek/spacing */
+}
+
+/* Each slide */
+.lightbox-slide{
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  min-height: calc(100% - 44px);    /* leave room for the peeks */
+  display: grid;
+  place-items: center;
+  padding: 12px 16px;
+}
+
+/* Frame that holds image/video */
+.lightbox-frame{
+  width: min(980px, 92vw);
+  height: min(72vh, 680px);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+/* Media */
+.lightbox-frame img,
+.lightbox-frame video{
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* keep full artwork visible */
+  display: block;
+}
+
+/* Slide text (title + description) */
+.lightbox-meta{
+  width: min(980px, 92vw);
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.lightbox-meta .meta-title{
+  color: var(--text);
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.lightbox-meta .meta-desc{
+  margin: 0;
+}
+
+/* Make the old single-image sizing irrelevant */
+.lightbox-img{ display:none; }
+
 
 /* ===========================
    GALLERY FILTER BUTTONS
