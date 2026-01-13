@@ -63,7 +63,7 @@
   <div class="gallery-thumb">
     <img src="images/OG JICIMI car scene colored.PNG" alt="William’s Car">
   </div>
-  <div class="First fully rendered thumbnail art of webtoon series ‘In case I make it’">
+  <div class="gallery-caption">
     <div class="cap-title">Just in case I make it</div>
     <div class="cap-sub">First fully rendered thumbnail art of webtoon series ‘In case I make it’</div>
   </div>
@@ -117,7 +117,7 @@
   </div>
 </a>
 
-        <a class="gallery-item" href="images/Barnaby chill.PNG"> data-tags="Sketch">
+        <a class="gallery-item" href="images/Barnaby%20chill.PNG" data-tags="sketch">
           <div class="gallery-thumb">
             <span class="media-placeholder">Concept Art 1</span>
           </div>
@@ -275,29 +275,170 @@
     }
   });
 
-  // Intercept gallery clicks and open modal
-  document.querySelectorAll("a.gallery-item[href]").forEach((a) => {
+   // ===========================
+  // SCROLL THROUGH ARTWORKS (prev/next)
+  // ===========================
+
+  const allAnchors = Array.from(document.querySelectorAll("a.gallery-item[href]"));
+
+  function looksLikeImageHref(href) {
+    return (
+      /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(href) ||
+      href.includes("images/")
+    );
+  }
+
+  function getAnchorData(a) {
+    const href = a.getAttribute("href") || "";
+    const t =
+      a.querySelector(".cap-title")?.textContent?.trim() ||
+      a.getAttribute("data-title") ||
+      "";
+    const sub =
+      a.querySelector(".cap-sub")?.textContent?.trim() ||
+      a.getAttribute("data-caption") ||
+      "";
+    const tags = a.getAttribute("data-tags") || "";
+    return { href, title: t, caption: sub, tags };
+  }
+
+  // Build the "scrollable" list from currently-visible (not filtered out) items
+  let scrollList = [];
+  let currentIndex = -1;
+
+  function rebuildScrollList() {
+    scrollList = allAnchors.filter((a) => {
+      const href = a.getAttribute("href") || "";
+      if (!looksLikeImageHref(href)) return false;
+      if (a.classList.contains("is-hidden")) return false;
+      return true;
+    });
+  }
+
+  function openFromIndex(idx) {
+    rebuildScrollList();
+    if (scrollList.length === 0) return;
+
+    // clamp
+    if (idx < 0) idx = 0;
+    if (idx > scrollList.length - 1) idx = scrollList.length - 1;
+
+    currentIndex = idx;
+
+    const a = scrollList[currentIndex];
+    const { href, title, caption, tags } = getAnchorData(a);
+
+    openLightbox({ src: href, title, caption, alt: title, tags });
+  }
+
+  function openFromAnchor(a) {
+    rebuildScrollList();
+    const idx = scrollList.indexOf(a);
+    currentIndex = idx >= 0 ? idx : 0;
+
+    const { href, title, caption, tags } = getAnchorData(a);
+    openLightbox({ src: href, title, caption, alt: title, tags });
+  }
+
+  function goNext() {
+    if (!overlay.classList.contains("open")) return;
+    rebuildScrollList();
+    if (scrollList.length === 0) return;
+
+    const next = Math.min(currentIndex + 1, scrollList.length - 1);
+    if (next === currentIndex) return;
+    openFromIndex(next);
+  }
+
+  function goPrev() {
+    if (!overlay.classList.contains("open")) return;
+    rebuildScrollList();
+    if (scrollList.length === 0) return;
+
+    const prev = Math.max(currentIndex - 1, 0);
+    if (prev === currentIndex) return;
+    openFromIndex(prev);
+  }
+
+  // Intercept gallery clicks and open modal + set index
+  allAnchors.forEach((a) => {
     a.addEventListener("click", (e) => {
       const href = a.getAttribute("href") || "";
-      const looksLikeImage =
-        /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(href) || href.includes("images/");
-      if (!looksLikeImage) return;
+      if (!looksLikeImageHref(href)) return;
 
       e.preventDefault();
-
-      const t =
-        a.querySelector(".cap-title")?.textContent?.trim() ||
-        a.getAttribute("data-title") ||
-        "";
-      const sub =
-        a.querySelector(".cap-sub")?.textContent?.trim() ||
-        a.getAttribute("data-caption") ||
-        "";
-      const tags = a.getAttribute("data-tags") || "";
-
-      openLightbox({ src: href, title: t, caption: sub, alt: t, tags });
+      openFromAnchor(a);
     });
   });
+
+  // Wheel / trackpad scroll -> next/prev (debounced)
+  let wheelLock = false;
+  function wheelStep(deltaY) {
+    if (wheelLock) return;
+    wheelLock = true;
+    setTimeout(() => (wheelLock = false), 240);
+
+    if (deltaY > 0) goNext();
+    if (deltaY < 0) goPrev();
+  }
+
+  overlay.addEventListener(
+    "wheel",
+    (e) => {
+      if (!overlay.classList.contains("open")) return;
+      e.preventDefault();
+      wheelStep(e.deltaY);
+    },
+    { passive: false }
+  );
+
+  // Keyboard navigation
+  document.addEventListener("keydown", (e) => {
+    if (!overlay.classList.contains("open")) return;
+
+    if (e.key === "ArrowDown" || e.key === "PageDown") {
+      e.preventDefault();
+      goNext();
+    }
+    if (e.key === "ArrowUp" || e.key === "PageUp") {
+      e.preventDefault();
+      goPrev();
+    }
+  });
+
+  // Touch swipe (mobile): swipe up = next, swipe down = prev
+  let touchStartY = null;
+
+  overlay.addEventListener(
+    "touchstart",
+    (e) => {
+      if (!overlay.classList.contains("open")) return;
+      touchStartY = e.touches?.[0]?.clientY ?? null;
+    },
+    { passive: true }
+  );
+
+  overlay.addEventListener(
+    "touchend",
+    (e) => {
+      if (!overlay.classList.contains("open")) return;
+      if (touchStartY == null) return;
+
+      const endY = e.changedTouches?.[0]?.clientY ?? null;
+      if (endY == null) return;
+
+      const dy = endY - touchStartY;
+      touchStartY = null;
+
+      // threshold to avoid accidental tiny swipes
+      if (Math.abs(dy) < 40) return;
+
+      if (dy < 0) goNext(); // swipe up
+      else goPrev(); // swipe down
+    },
+    { passive: true }
+  );
+
 
   // ===========================
   // FILTER LOGIC (multi-select)
