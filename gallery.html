@@ -182,14 +182,15 @@
   // ===========================
   const overlay = document.getElementById("lightboxOverlay");
   const modal = document.getElementById("lightboxModal");
-  const img = document.getElementById("lightboxImg");
+ const feed = document.getElementById("lightboxFeed");
   const titleEl = document.getElementById("lightboxTitle");
   const capEl = document.getElementById("lightboxCaption");
   const tagsEl = document.getElementById("lightboxTags");
   const btnClose = document.getElementById("lightboxClose");
   const btnFS = document.getElementById("lightboxFullscreen");
 
-  if (!overlay || !modal || !img) return;
+if (!overlay || !modal || !feed) return;
+
 
   let lastFocus = null;
 
@@ -216,6 +217,16 @@
     if (titleEl) titleEl.textContent = title || "Artwork";
     if (capEl) capEl.textContent = caption || "";
     renderTags(tags);
+    function isVideoFile(src){
+  return /\.(mp4|webm|mov|m4v|ogg)$/i.test(src);
+}
+
+function escapeHTML(str=""){
+  return str.replace(/[&<>"']/g, (m) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
 
     // IMPORTANT: open as normal modal first (NOT fullscreen)
     overlay.classList.remove("soft-fullscreen");
