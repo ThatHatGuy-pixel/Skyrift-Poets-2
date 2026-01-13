@@ -1122,6 +1122,74 @@ body.no-scroll {
 /* Make the old single-image sizing irrelevant */
 .lightbox-img{ display:none; }
 
+/* ===========================
+   SHORTS-STYLE FEED (SCROLL + SNAP)
+   =========================== */
+
+.lightbox-body{
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Scroll container */
+.lightbox-feed{
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scroll-snap-stop: always;
+  padding: 22px 0; /* creates the “peek” above/below */
+}
+
+/* One “short” */
+.lightbox-slide{
+  scroll-snap-align: center;
+  min-height: calc(100% - 44px);
+  display: grid;
+  place-items: center;
+  padding: 12px 16px;
+}
+
+/* Media frame */
+.lightbox-frame{
+  width: min(980px, 92vw);
+  height: min(72vh, 680px);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+}
+
+/* The media itself */
+.lightbox-frame img,
+.lightbox-frame video{
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* change to cover if you want crop-fill */
+  display: block;
+}
+
+/* Optional: per-slide text under the frame */
+.lightbox-meta{
+  width: min(980px, 92vw);
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.lightbox-meta .meta-title{
+  color: var(--text);
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.lightbox-meta .meta-desc{
+  margin: 0;
+}
 
 /* ===========================
    GALLERY FILTER BUTTONS
