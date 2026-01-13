@@ -243,7 +243,8 @@ function escapeHTML(str=""){
     overlay.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll");
 
-    img.removeAttribute("src");
+    feed.innerHTML = "";
+
     if (tagsEl) tagsEl.innerHTML = "";
 
     if (document.fullscreenElement) {
@@ -286,6 +287,50 @@ function escapeHTML(str=""){
       overlay.classList.remove("soft-fullscreen");
     }
   });
+  function updateHeaderFromNearest(){
+  // find the slide nearest to the center of the feed viewport
+  const slides = Array.from(feed.querySelectorAll(".lightbox-slide"));
+  if (slides.length === 0) return;
+
+  const box = feed.getBoundingClientRect();
+  const centerY = box.top + box.height / 2;
+
+  let best = null;
+  let bestDist = Infinity;
+
+  for (const s of slides){
+    const r = s.getBoundingClientRect();
+    const sCenter = r.top + r.height / 2;
+    const d = Math.abs(sCenter - centerY);
+    if (d < bestDist){
+      bestDist = d;
+      best = s;
+    }
+  }
+
+  if (!best) return;
+
+  const t = best.getAttribute("data-title") || "Artwork";
+  const c = best.getAttribute("data-caption") || "";
+  const tags = best.getAttribute("data-tags") || "";
+
+  if (titleEl) titleEl.textContent = t || "Artwork";
+  if (capEl) capEl.textContent = c || "";
+  renderTags(tags);
+}
+
+// update header while scrolling (throttled)
+let feedTick = false;
+feed.addEventListener("scroll", () => {
+  if (!overlay.classList.contains("open")) return;
+  if (feedTick) return;
+  feedTick = true;
+  requestAnimationFrame(() => {
+    feedTick = false;
+    updateHeaderFromNearest();
+  });
+});
+
 
    // ===========================
   // SCROLL THROUGH ARTWORKS (prev/next)
@@ -340,8 +385,86 @@ function escapeHTML(str=""){
     const a = scrollList[currentIndex];
     const { href, title, caption, tags } = getAnchorData(a);
 
-    openLightbox({ src: href, title, caption, alt: title, tags });
-  }
+   function openLightbox({ startIndex = 0 } = {}) {
+  lastFocus = document.activeElement;
+
+  // build list of currently visible items (respects filters)
+  const items = Array.from(document.querySelectorAll("a.gallery-item[href]"))
+    .filter(a => !a.classList.contains("is-hidden"))
+    .filter(a => {
+      const href = a.getAttribute("href") || "";
+      return /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(href) || href.includes("images/");
+    });
+
+  if (items.length === 0) return;
+
+  // Build feed slides
+  feed.innerHTML = items.map((a, i) => {
+    const href = a.getAttribute("href") || "";
+    const t =
+      a.querySelector(".cap-title")?.textContent?.trim() ||
+      a.getAttribute("data-title") || "";
+    const sub =
+      a.querySelector(".cap-sub")?.textContent?.trim() ||
+      a.getAttribute("data-caption") || "";
+    const tags = a.getAttribute("data-tags") || "";
+
+    const media = isVideoFile(href)
+      ? `<video class="lb-media" src="${escapeHTML(href)}" playsinline muted loop preload="metadata"></video>`
+      : `<img class="lb-media" src="${escapeHTML(href)}" alt="${escapeHTML(t || "Artwork")}" loading="eager">`;
+
+    return `
+      <section class="lightbox-slide" data-index="${i}" data-title="${escapeHTML(t)}" data-caption="${escapeHTML(sub)}" data-tags="${escapeHTML(tags)}">
+        <div class="lightbox-frame">${media}</div>
+        <div class="lightbox-meta">
+          <p class="meta-title">${escapeHTML(t || "Artwork")}</p>
+          <p class="meta-desc">${escapeHTML(sub || "")}</p>
+        </div>
+      </section>
+    `;
+  }).join("");
+
+  // open overlay
+  overlay.classList.remove("soft-fullscreen");
+  overlay.classList.add("open");
+  overlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("no-scroll");
+
+  // jump to the clicked slide
+  const clamped = Math.max(0, Math.min(startIndex, items.length - 1));
+  requestAnimationFrame(() => {
+    const target = feed.querySelector(`.lightbox-slide[data-index="${clamped}"]`);
+    if (target) target.scrollIntoView({ block: "center" });
+    updateHeaderFromNearest(); // set title/tags at top
+  });
+let vidObserver = null;
+
+function setupVideoObserver(){
+  if (vidObserver) vidObserver.disconnect();
+
+  const videos = Array.from(feed.querySelectorAll("video.lb-media"));
+  if (videos.length === 0) return;
+
+  vidObserver = new IntersectionObserver((entries) => {
+    for (const e of entries){
+      const v = e.target;
+      if (e.isIntersecting && e.intersectionRatio > 0.65){
+        v.play().catch(()=>{});
+      } else {
+        v.pause();
+      }
+    }
+  }, { root: feed, threshold: [0.65] });
+
+  videos.forEach(v => vidObserver.observe(v));
+}
+
+  btnClose && btnClose.focus();
+
+  // ---- video auto-play on the current slide ----
+  setupVideoObserver();
+}
+
 
   function openFromAnchor(a) {
     rebuildScrollList();
@@ -372,16 +495,27 @@ function escapeHTML(str=""){
     openFromIndex(prev);
   }
 
-  // Intercept gallery clicks and open modal + set index
-  allAnchors.forEach((a) => {
-    a.addEventListener("click", (e) => {
-      const href = a.getAttribute("href") || "";
-      if (!looksLikeImageHref(href)) return;
+document.querySelectorAll("a.gallery-item[href]").forEach((a) => {
+  a.addEventListener("click", (e) => {
+    const href = a.getAttribute("href") || "";
+    const ok = /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(href) || href.includes("images/");
+    if (!ok) return;
 
-      e.preventDefault();
-      openFromAnchor(a);
-    });
+    e.preventDefault();
+
+    // build the same visible list to find index
+    const visible = Array.from(document.querySelectorAll("a.gallery-item[href]"))
+      .filter(x => !x.classList.contains("is-hidden"))
+      .filter(x => {
+        const h = x.getAttribute("href") || "";
+        return /\.(png|jpg|jpeg|gif|webp|svg|mp4|webm|mov|m4v|ogg)$/i.test(h) || h.includes("images/");
+      });
+
+    const idx = visible.indexOf(a);
+    openLightbox({ startIndex: Math.max(0, idx) });
   });
+});
+
 
   // Wheel / trackpad scroll -> next/prev (debounced)
   let wheelLock = false;
