@@ -255,6 +255,9 @@
   document.addEventListener("keydown", (e) => {
     if (!overlay.classList.contains("open")) return;
     if (e.key === "Escape") closeLightbox();
+        currentIndex = -1;
+    updateNavButtons();
+
   });
 
   // Fullscreen toggle
@@ -280,29 +283,107 @@
     }
   });
 
-  // Intercept gallery clicks and open modal
-  document.querySelectorAll("a.gallery-item[href]").forEach((a) => {
+  // ===========================
+  // GALLERY NAV (arrows + keyboard)
+  // Only for gallery items on this page
+  // ===========================
+
+  const galleryLinks = Array.from(document.querySelectorAll("a.gallery-item[href]"));
+  const btnPrev = document.getElementById("lightboxPrev");
+  const btnNext = document.getElementById("lightboxNext");
+
+  let currentIndex = -1;
+
+  function isImageHref(href) {
+    return /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(href || "") || (href || "").includes("images/");
+  }
+
+  function getVisibleGalleryLinks() {
+    // respects your filter: items with .is-hidden are excluded
+    return galleryLinks.filter(a => !a.classList.contains("is-hidden") && isImageHref(a.getAttribute("href")));
+  }
+
+  function getMetaFromLink(a) {
+    const href = a.getAttribute("href") || "";
+    const t =
+      a.querySelector(".cap-title")?.textContent?.trim() ||
+      a.getAttribute("data-title") ||
+      "";
+    const sub =
+      a.querySelector(".cap-sub")?.textContent?.trim() ||
+      a.getAttribute("data-caption") ||
+      "";
+    const tags = a.getAttribute("data-tags") || "";
+    return { src: href, title: t, caption: sub, alt: t, tags };
+  }
+
+  function updateNavButtons() {
+    if (!btnPrev || !btnNext) return;
+    const visible = getVisibleGalleryLinks();
+    const hasMany = visible.length > 1;
+
+    // if 0/1 visible, hide or disable (your choice). Here: disable + hide.
+    btnPrev.style.display = hasMany ? "" : "none";
+    btnNext.style.display = hasMany ? "" : "none";
+
+    if (!hasMany) return;
+
+    btnPrev.disabled = currentIndex <= 0;
+    btnNext.disabled = currentIndex >= visible.length - 1;
+  }
+
+    function goToIndex(nextIndex) {
+    const visible = getVisibleGalleryLinks();
+    if (visible.length === 0) return;
+
+    const len = visible.length;
+    currentIndex = ((nextIndex % len) + len) % len; // wrap
+
+    openLightbox(getMetaFromLink(visible[currentIndex]));
+    updateNavButtons();
+  }
+
+
+  function goNext() { goToIndex(currentIndex + 1); }
+  function goPrev() { goToIndex(currentIndex - 1); }
+
+  // Button clicks
+  btnNext && btnNext.addEventListener("click", (e) => { e.stopPropagation(); goNext(); });
+  btnPrev && btnPrev.addEventListener("click", (e) => { e.stopPropagation(); goPrev(); });
+
+  // Intercept gallery clicks and open modal (and set index)
+  galleryLinks.forEach((a) => {
     a.addEventListener("click", (e) => {
       const href = a.getAttribute("href") || "";
-      const looksLikeImage =
-        /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(href) || href.includes("images/");
-      if (!looksLikeImage) return;
+      if (!isImageHref(href)) return;
 
       e.preventDefault();
 
-      const t =
-        a.querySelector(".cap-title")?.textContent?.trim() ||
-        a.getAttribute("data-title") ||
-        "";
-      const sub =
-        a.querySelector(".cap-sub")?.textContent?.trim() ||
-        a.getAttribute("data-caption") ||
-        "";
-      const tags = a.getAttribute("data-tags") || "";
+      const visible = getVisibleGalleryLinks();
+      currentIndex = visible.indexOf(a);
 
-      openLightbox({ src: href, title: t, caption: sub, alt: t, tags });
+      // If for some reason it's not found (shouldn't happen), fall back:
+      if (currentIndex < 0) currentIndex = 0;
+
+      openLightbox(getMetaFromLink(a));
+      updateNavButtons();
     });
   });
+
+  // Keyboard nav while open
+  document.addEventListener("keydown", (e) => {
+    if (!overlay.classList.contains("open")) return;
+
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      goNext();
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goPrev();
+    }
+  });
+
 
   // ===========================
   // FILTER LOGIC (multi-select)
