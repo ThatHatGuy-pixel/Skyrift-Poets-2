@@ -1099,4 +1099,51 @@ body.no-scroll {
 .gallery-item.is-hidden {
   display: none !important;
 }
+/* ===========================
+   LIGHTBOX NAV ARROWS (Gallery only)
+   =========================== */
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.65);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  line-height: 1;
+  z-index: 6;
+  user-select: none;
+}
+
+.lightbox-nav:hover {
+  border-color: rgba(250, 204, 21, 0.7);
+}
+
+.lightbox-prev { left: 12px; }
+.lightbox-next { right: 12px; }
+
+/* hide arrows on small screens if you want (optional) */
+@media (max-width: 720px) {
+  .lightbox-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+}
+
+/* disabled look */
+.lightbox-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Make sure modal can position absolute children */
+.lightbox-modal { position: relative; }
 
